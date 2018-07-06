@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/login"
+            android:icon="@drawable/ic_account_circle_black_24dp"
+            android:title="Profile" />
+
+        <item
+            android:id="@+id/about"
+            android:icon="@drawable/ic_error_black_24dp"
+            android:title="About" />
+        <item
+            android:id="@+id/locate"
+            android:icon="@drawable/ic_location_on_black_24dp"
+            android:title="Locate us" />
+        <item
+            android:title="@string/app_name"/>
+        <item
+            android:title="@string/app_name"/>
+        <item
+            android:title="@string/app_name"/>
+        <item
+            android:title="@string/app_name"/>
+        <item
+            android:title="@string/app_name"/>
+        <item
+            android:title="@string/app_name"/>
+        <item
+            android:title="@string/app_name"/>
+        <item
+            android:title="@string/app_name"/>
+        <item
+            android:title="@string/app_name"/>
+
+    </group>
+    <menu>
+        <item android:title="Social"/>
+    </menu>
+    <group>
+            <item
+            android:id="@+id/facebook"
+            android:icon="@drawable/fb"
+            android:title="facebook" />
+    </group>
+
+</menu>
