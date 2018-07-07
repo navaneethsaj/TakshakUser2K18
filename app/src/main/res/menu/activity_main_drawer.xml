@@ -7,7 +7,7 @@
         <item
             android:id="@+id/login"
             android:icon="@drawable/ic_account_circle_black_24dp"
-            android:title="Profile" />
+            android:title="Notifications" />
 
         <item
             android:id="@+id/about"

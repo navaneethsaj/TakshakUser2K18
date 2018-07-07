@@ -1,11 +1,16 @@
 package takshak.mace.takshak2k18;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -14,43 +19,40 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class profile extends AppCompatActivity {
-    TextView name,phone,rank,notificationBox,readmore;
-    LinearLayout notificationlayout;
+    TextView name,phone,rank,notificationBox;
     boolean ismessageexpanded = false;
+    String MyPREFERENCES = "savedNotification";
+    SharedPreferences.Editor editor;
     String url = "https://us-central1-takshakapp18.cloudfunctions.net/getnotification";
+    SharedPreferences sharedpreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        rank=(TextView)findViewById(R.id.rank);
-        name=(TextView)findViewById(R.id.name);
-        phone=(TextView)findViewById(R.id.number);
-        rank.setText("unknown");
-        name.setText("unknown");
-        phone.setText("unknown");
+        setTitle("Notifications");
 
         notificationBox = findViewById(R.id.notificationBox);
-        notificationlayout = findViewById(R.id.notificationLayout);
-        readmore = findViewById(R.id.readmore);
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        editor = sharedpreferences.edit();
+        String msg = sharedpreferences.getString("message","No message available");
+        notificationBox.setText(msg);
 
         //Execute only when internet connection is LIVE
-        new MyAsyncTask().execute(url);
+        ConnectivityManager conMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        notificationBox.setMaxLines(2);
-        notificationlayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ismessageexpanded == false){
-                    notificationBox.setMaxLines(100);
-                    readmore.setText("...Show less");
-                    ismessageexpanded = true;
-                }else {
-                    notificationBox.setMaxLines(2);
-                    readmore.setText("...Show more");
-                    ismessageexpanded = false;
-                }
-            }
-        });
+        if ( conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED
+                || conMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED ) {
+
+            // notify user you are online
+            new MyAsyncTask().execute(url);
+
+        }
+        else if ( conMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.DISCONNECTED
+                || conMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.DISCONNECTED) {
+
+            Toast.makeText(this,"No internet connection\nUpdates might be outdated\nConnect to internet and restart app",Toast.LENGTH_LONG).show();
+        }
     }
     class MyAsyncTask extends AsyncTask<String, Void, String> {
 
@@ -79,11 +81,12 @@ public class profile extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (s != null){
-                notificationlayout.setVisibility(View.VISIBLE);
                 notificationBox.setVisibility(View.VISIBLE);
                 notificationBox.setText(s);
+                editor.putString("message",s);
+                editor.commit();
+                Toast.makeText(getApplicationContext(),"Updated",Toast.LENGTH_SHORT).show();
             }else {
-                notificationlayout.setVisibility(View.GONE);
                 notificationBox.setVisibility(View.INVISIBLE);
             }
         }
@@ -91,7 +94,11 @@ public class profile extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            notificationlayout.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }
